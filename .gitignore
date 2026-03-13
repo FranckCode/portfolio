@@ -9,3 +9,6 @@ package-lock.json
 .DS_Store
 
 .vscode/
+
+# Environment variables (contient des données sensibles)
+.env

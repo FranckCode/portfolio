@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio
+    restart: unless-stopped
+    networks:
+      - proxy_network
+    labels:
+      - "traefik.enable=true"
+
+      # ----- HTTP → HTTPS redirect -----
+      - "traefik.http.routers.portfolio-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.portfolio-http.entrypoints=web"
+      - "traefik.http.routers.portfolio-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+      # ----- HTTPS (TLS via Let's Encrypt) -----
+      - "traefik.http.routers.portfolio.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure"
+      - "traefik.http.routers.portfolio.tls=true"
+      - "traefik.http.routers.portfolio.tls.certresolver=letsencrypt"
+
+      # ----- www → apex redirect -----
+      - "traefik.http.routers.portfolio.middlewares=www-to-apex"
+      - "traefik.http.middlewares.www-to-apex.redirectregex.regex=^https://www\\.${DOMAIN}(.*)"
+      - "traefik.http.middlewares.www-to-apex.redirectregex.replacement=https://${DOMAIN}$${1}"
+      - "traefik.http.middlewares.www-to-apex.redirectregex.permanent=true"
+
+      # ----- Backend port -----
+      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
+
+networks:
+  proxy_network:
+    external: true
