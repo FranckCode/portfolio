@@ -21,7 +21,7 @@ services:
       - "traefik.http.routers.portfolio.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.portfolio.entrypoints=websecure"
       - "traefik.http.routers.portfolio.tls=true"
-      - "traefik.http.routers.portfolio.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.portfolio.tls.certresolver=myresolver"
 
       # ----- www → apex redirect -----
       - "traefik.http.routers.portfolio.middlewares=www-to-apex"
