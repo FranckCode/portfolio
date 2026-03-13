@@ -10,13 +10,6 @@ services:
     labels:
       - "traefik.enable=true"
 
-      # ----- HTTP → HTTPS redirect -----
-      - "traefik.http.routers.portfolio-http.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
-      - "traefik.http.routers.portfolio-http.entrypoints=web"
-      - "traefik.http.routers.portfolio-http.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
-
       # ----- HTTPS (TLS via Let's Encrypt) -----
       - "traefik.http.routers.portfolio.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.portfolio.entrypoints=websecure"
